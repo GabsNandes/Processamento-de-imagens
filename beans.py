@@ -19,13 +19,19 @@ print(imagem.shape[2])
         
 gray, blue, green, red = grayFunction(imagem)
 
+
+
+
 base, data, _, _, _ = calcHists(gray, blue, green, red, imagem)
 
 plotGrayOnly(base, data)
 
-blackwhiteimg = blackandwhite(gray, 116)
+#blackwhiteimg = blackandwhite(gray)
 
-cv2.imshow("Blackandwhite", blackwhiteimg)
+#cv2.imshow("Blackandwhite", blackwhiteimg)
+
+erase(gray)
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

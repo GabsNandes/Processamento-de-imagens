@@ -23,33 +23,34 @@ print(imagem.shape[2])
         
 gray, blue, green, red = grayFunction(imagem)
 
+f1, f2, f3 = contraste(imagem, gray)
+negimg = negativo(imagem, gray)
+parbol = parboltone(imagem, gray)
+
+
 target_size = (200, 200)  # Adjust this size as needed
 
 # Resize each image to the target size
-imagem_resized = cv2.resize(imagem, target_size)
-blue_resized = cv2.resize(blue, target_size)
-green_resized = cv2.resize(green, target_size)
-red_resized = cv2.resize(red, target_size)
+
+f1_resized = cv2.resize(f1, target_size)
+f2_resized = cv2.resize(f2, target_size)
+f3_resized = cv2.resize(f3, target_size)
+neg_resized = cv2.resize(negimg, target_size)
 gray_resized = cv2.resize(gray, target_size)
+parbol_resized = cv2.resize(parbol, target_size) 
 
 # Stack images horizontally in pairs and then vertically to form a single image
-top_row = cv2.hconcat([imagem_resized, blue_resized])
-bottom_row = cv2.hconcat([green_resized, red_resized])
-combined_image = cv2.vconcat([top_row, bottom_row])
+top_row = cv2.hconcat([gray_resized, f1_resized])
+middle_row = cv2.hconcat([f2_resized, f3_resized])
+bottom_row = cv2.hconcat([parbol_resized, neg_resized])
+combined_image = cv2.vconcat([top_row, middle_row, bottom_row])
+
 
 # Display the combined image
 cv2.imshow("Combined Image", combined_image)
-cv2.imshow("gray", gray_resized)
 
 
-
-# Plotting the histograms separately
-
-base, data, blue_hist, green_hist, red_hist = calcHists(gray, blue, green, red, imagem)
-
-# Original dataset (grey)
-plothists(base, blue_hist, green_hist, red_hist, data)
-
+plot(f1,f2,f3,gray,negimg,parbol)
 
 
 cv2.waitKey(0)

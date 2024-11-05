@@ -84,7 +84,7 @@ def calcHists(gray, blue, green, red, imagem):
 
     return base, data, blue_hist, green_hist, red_hist
 
-def plot(base, blue_hist, green_hist, red_hist, data):
+def plothists(base, blue_hist, green_hist, red_hist, data):
     fig, axs = plt.subplots(2, 2, figsize=(12, 10))
     fig.suptitle('Different Datasets Histograms', fontsize=16)
 
@@ -110,6 +110,48 @@ def plot(base, blue_hist, green_hist, red_hist, data):
     axs[1, 1].set_title('Red Dataset')
     axs[1, 1].set_xlabel('Values')
     axs[1, 1].set_ylabel('Frequency')
+
+    # Adjust layout for better appearance
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.show()
+
+def plot(f1, f2, f3, gray, neg, parbol):
+    fig, axs = plt.subplots(2, 3, figsize=(12, 10))
+    fig.suptitle('Different Datasets Histograms', fontsize=16)
+
+    axs[0, 0].plot(gray, f1, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[0, 0].set_title('F1')
+    axs[0, 0].set_xlabel('X')
+    axs[0, 0].set_ylabel('y')
+
+    # Blue dataset
+    axs[0, 1].plot(gray, f2, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[0, 1].set_title('F2')
+    axs[0, 1].set_xlabel('X')
+    axs[0, 1].set_ylabel('Y')
+
+    # Green dataset
+    axs[1, 0].plot(gray, f3, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[1, 0].set_title('F3')
+    axs[1, 0].set_xlabel('X')
+    axs[1, 0].set_ylabel('Y')
+
+    # Red dataset
+    axs[1, 1].plot(gray, gray, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[1, 1].set_title('Original')
+    axs[1, 1].set_xlabel('X')
+    axs[1, 1].set_ylabel('Y')
+
+    axs[0, 2].plot(neg, neg, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[0, 2].set_title('Negative')
+    axs[0, 2].set_xlabel('X')
+    axs[0, 2].set_ylabel('Y')
+
+    # Red dataset
+    axs[1, 2].plot(gray, parbol, color='b', linestyle='-', linewidth=2, markersize=6)
+    axs[1, 2].set_title('Parabolica')
+    axs[1, 2].set_xlabel('X')
+    axs[1, 2].set_ylabel('Y')
 
     # Adjust layout for better appearance
     plt.tight_layout(rect=[0, 0, 1, 0.96])
@@ -216,5 +258,71 @@ def eraseThree(erasedT, cutOffPoint1, cutOffPoint2):
                 
             
     return erasedT
+
+
+def contraste(imagem, gray):
+
+    f1 =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+    f2 =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+    f3 =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            f1[i,j] = gray[i,j]
+            
+            if(gray[i,j]*2>255):
+                f2[i,j] = 255
+            else:
+                f2[i,j] = gray[i,j]*2
+
+            if(gray[i,j]+100>255):
+                f3[i,j] = 255
+            else:
+                f3[i,j] = gray[i,j]+100
+
+    return f1, f2, f3
+
+
+def negativo(imagem, gray):
+    negativo =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            negativo[i,j] = np.abs(gray[i,j]-255)
+
+    return negativo
+
+
+def parboltone(imagem, gray):
+    parbol =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            parbol[i,j] = ((((1/256)*gray[i,j]))**2)*255
+
+    return parbol
+
+
+def exphis(imagem, gray):
+    expanded =  np.zeros( (imagem.shape[0], imagem.shape[1]), dtype = np.uint8 )
+
+    r1 = int(input("r1: "))
+    r2 = int(input("r2: "))
+
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            if(gray[i,j]<=r1):
+                expanded[i,j] = 0
+            if(gray[i,j]>=r2):
+                expanded[i,j]=255
+            else:
+                expanded[i,j] = 255*np.abs((gray[i,j]-r1)/(r2-r1))
+
+
+    return expanded
 
 

@@ -161,7 +161,6 @@ def plotGrayOnly(base, data):
     
 
     plt.bar(base, data, color='grey')
-    plt.plot(base, data, color='blue', marker='o', linestyle='-', label='Line Graph')
     plt.suptitle('Grey Dataset')
     plt.xlabel('Values')
     plt.ylabel('Frequency')
@@ -170,6 +169,28 @@ def plotGrayOnly(base, data):
     # Adjust layout for better appearance
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
+
+def compareplotGrayOnly(base, gray_hist, normalized_hist):
+    
+
+    fig, axs = plt.subplots(2, 1, figsize=(12, 10))
+    fig.suptitle('Different Datasets Histograms', fontsize=16)
+
+    axs[0].bar(base, gray_hist, color='g')
+    axs[0].set_title('F1')
+    axs[0].set_xlabel('X')
+    axs[0].set_ylabel('y')
+
+    # Blue dataset
+    axs[1].bar(base, normalized_hist, color='g')
+    axs[1].set_title('F2')
+    axs[1].set_xlabel('X')
+    axs[1].set_ylabel('Y')
+
+    # Adjust layout for better appearance
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.show()
+
 
 def detectvaley(base, data):
 
@@ -326,3 +347,60 @@ def exphis(imagem, gray):
     return expanded
 
 
+def normalized_gray(gray, gray_hist):
+
+    normalized_hist = [0]*256
+    pixels = (gray.shape[0]*gray.shape[1])
+
+    for i in range(256):
+    
+        normalized_hist[i] = gray_hist[i]/pixels
+
+    return normalized_hist
+
+
+def print_gray(gray):
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+            print(gray[i,j])
+
+
+def generate_normalized_img(gray, normalized_hist):
+
+    normalized_img = np.zeros( (gray.shape[0], gray.shape[1]), dtype = np.uint8 )
+
+    gray_level = [0]*256
+    accumulated_hist = [0]*256
+    acc = 0
+
+    for i in range(256):
+        gray_level[i] = i/256
+    
+    for j in range(256):
+        acc = normalized_hist[j] + acc
+        accumulated_hist[j] = acc
+
+
+    
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            current = int(gray[i,j])
+            acc_value = accumulated_hist[current]
+
+
+
+            for k in range((current-1),256):
+
+                if(k<255):
+                    diff = np.abs(acc_value - gray_level[k])
+                    nextdiff =  np.abs(acc_value - gray_level[k+1])
+                    
+                    if(nextdiff>diff):
+                        normalized_img[i,j] = k
+                        break
+                
+                else:
+                    normalized_img[i,j] = 255
+            
+    return normalized_img, accumulated_hist

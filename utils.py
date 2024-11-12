@@ -59,6 +59,15 @@ def grayFunction(imagem):
     return gray, blue, green, red
 
 
+def combine_bgr(imagem, blue, green, red):
+    new_img = np.zeros((imagem.shape[0],imagem.shape[1],imagem.shape[2]), dtype = np.uint8)
+
+    new_img[:,:,0] = blue[:,:,0]
+    new_img[:,:,1] = green[:,:,1]
+    new_img[:,:,2] = red[:,:,2]
+
+    return new_img
+
 def calcHists(gray, blue, green, red, imagem):
     arr0 = [0] * 256
     base = [0] * 256
@@ -359,6 +368,18 @@ def normalized_gray(gray, gray_hist):
     return normalized_hist
 
 
+def normalized_color(gray, color_hist):
+
+    normalized_hist = [0]*256
+    pixels = (gray.shape[0]*gray.shape[1])
+
+    for i in range(256):
+    
+        normalized_hist[i] = color_hist[i]/pixels
+
+    return normalized_hist
+
+
 def print_gray(gray):
     for i in range(gray.shape[0]):
         for j in range(gray.shape[1]):
@@ -402,5 +423,46 @@ def generate_normalized_img(gray, normalized_hist):
                 
                 else:
                     normalized_img[i,j] = 255
+            
+    return normalized_img, accumulated_hist
+
+
+def generate_normalized_colored_img(imagem, normalized_hist, pos):
+
+    normalized_img = np.zeros((imagem.shape[0],imagem.shape[1],imagem.shape[2]), dtype = np.uint8)
+
+    gray_level = [0]*256
+    accumulated_hist = [0]*256
+    acc = 0
+
+    for i in range(256):
+        gray_level[i] = i/256
+    
+    for j in range(256):
+        acc = normalized_hist[j] + acc
+        accumulated_hist[j] = acc
+
+
+    
+    for i in range(imagem.shape[0]):
+        for j in range(imagem.shape[1]):
+
+            current = int(imagem[i,j, pos])
+            acc_value = accumulated_hist[current]
+
+
+
+            for k in range((current-1),256):
+
+                if(k<255):
+                    diff = np.abs(acc_value - gray_level[k])
+                    nextdiff =  np.abs(acc_value - gray_level[k+1])
+                    
+                    if(nextdiff>diff):
+                        normalized_img[i,j, pos] = k
+                        break
+                
+                else:
+                    normalized_img[i,j, pos] = 255
             
     return normalized_img, accumulated_hist

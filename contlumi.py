@@ -2,7 +2,9 @@
 
 
 import cv2 
-from utils import *
+from utils.generalutils import *
+from utils.grayutils import contraste, negativo, parboltone
+from utils.graphutils import plot
 
 
 nomeimagem = select_imagem()    
@@ -21,7 +23,7 @@ print(imagem.shape[0])
 print("Channels: ")
 print(imagem.shape[2])
         
-gray, blue, green, red = grayFunction(imagem)
+gray, blue, green, red = split_colors(imagem)
 
 f1, f2, f3 = contraste(imagem, gray)
 negimg = negativo(imagem, gray)

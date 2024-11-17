@@ -1,6 +1,7 @@
 
 import cv2 
-from utils import *
+from utils.generalutils import *
+from utils.graphutils import calcHists, plotGrayOnly, exphis
 
 
 nomeimagem = select_imagem()    
@@ -19,7 +20,7 @@ print(imagem.shape[0])
 print("Channels: ")
 print(imagem.shape[2])
         
-gray, blue, green, red = grayFunction(imagem)
+gray, blue, green, red = split_colors(imagem)
 
 base, data, _, _, _ = calcHists(gray, blue, green, red, imagem)
 

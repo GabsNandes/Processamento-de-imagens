@@ -2,7 +2,10 @@
 
 
 import cv2 
-from utils import *
+from utils.generalutils import *
+from utils.colorutils import generate_normalized_colored_img, combine_bgr
+from utils.grayutils import normalized_gray
+from utils.graphutils import calcHists
 
 
 nomeimagem = select_imagem()    
@@ -21,7 +24,7 @@ print(imagem.shape[0])
 print("Channels: ")
 print(imagem.shape[2])
         
-gray, blue, green, red = grayFunction(imagem)
+gray, blue, green, red = split_colors(imagem)
 
 target_size = (200, 200)  # Adjust this size as needed
 

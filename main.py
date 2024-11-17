@@ -16,16 +16,17 @@ file_num = 0
 running = True
 
 
-for file in python_files:
-
-    print(file_num,"-",file)
-    file_num+=1
-
 while running:
+
+    for file in python_files:
+
+        print(file_num,"-",file)
+        file_num+=1
+
 
     file_choice=int(input("Pick number a to run a file, or pick a larger number to exit: "))
 
-    if(file_choice>len(python_files)):
+    if(file_choice>=len(python_files)):
         print("Exiting....")
         running = False
     else:

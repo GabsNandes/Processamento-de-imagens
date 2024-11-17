@@ -1,5 +1,7 @@
 import cv2 
-from utils import *
+from utils.generalutils import *
+from utils.grayutils import erase
+from utils.graphutils import calcHists, plotGrayOnly
 
 nomeimagem = select_imagem()    
     

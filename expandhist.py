@@ -1,7 +1,8 @@
 
 import cv2 
 from utils.generalutils import *
-from utils.graphutils import calcHists, plotGrayOnly, exphis
+from utils.graphutils import calcHists, plotGrayOnly
+from utils.grayutils import exphis
 
 
 nomeimagem = select_imagem()    

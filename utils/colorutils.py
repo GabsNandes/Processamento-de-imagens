@@ -12,6 +12,25 @@ def combine_bgr(imagem, blue, green, red):
 
     return new_img
 
+def exphisColor(color, index):
+    expanded =  np.zeros( (color.shape[0], color.shape[1], color.shape[2]), dtype = np.uint8 )
+
+    r1 = int(input("r1: "))
+    r2 = int(input("r2: "))
+
+    for i in range(color.shape[0]):
+        for j in range(color.shape[1]):
+
+            if(color[i,j, index]<=r1):
+                expanded[i,j, index] = 0
+            if(color[i,j, index]>=r2):
+                expanded[i,j, index]=255
+            else:
+                expanded[i,j, index] = 255*np.abs((color[i,j, index]-r1)/(r2-r1))
+
+
+    return expanded
+
 def normalized_color(gray, color_hist):
 
     normalized_hist = [0]*256

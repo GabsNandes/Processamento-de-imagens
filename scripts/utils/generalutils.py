@@ -21,7 +21,7 @@ def select_imagem():
 
     filetype = dicttypes[tipoimagem]
 
-    nomeimagem = 'images/'+nomeimagem+filetype
+    nomeimagem = '/Users/regin/OneDrive/Documentos/Nova pasta/images/'+nomeimagem+filetype
 
 
     access = os.path.exists(nomeimagem)

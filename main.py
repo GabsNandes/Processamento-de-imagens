@@ -17,7 +17,7 @@ running = True
 
 
 while running:
-
+    file_num = 0
     for file in python_files:
 
         print(file_num,"-",file)
@@ -30,4 +30,5 @@ while running:
         print("Exiting....")
         running = False
     else:
+        print("Selected: ", python_files[file_choice])
         subprocess.run(["python", python_files[file_choice]], check=True)

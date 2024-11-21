@@ -12,6 +12,75 @@ def combine_bgr(imagem, blue, green, red):
 
     return new_img
 
+def make_blue(imagem, blue, green, red, choice):
+
+
+    new_img = np.zeros((imagem.shape[0],imagem.shape[1],imagem.shape[2]), dtype = np.uint8)
+
+    if(choice==1):
+
+        new_img[:,:,0] = blue[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = red[:,:,2]
+
+    if(choice==2):
+        new_img[:,:,0] = blue[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = blue[:,:,2]
+
+    else:
+        new_img[:,:,0] = blue[:,:,0]
+        new_img[:,:,1] = blue[:,:,1]
+        new_img[:,:,2] = blue[:,:,2]
+
+    return new_img
+
+def make_green(imagem, blue, green, red, choice):
+
+
+    new_img = np.zeros((imagem.shape[0],imagem.shape[1],imagem.shape[2]), dtype = np.uint8)
+
+    if(choice==1):
+
+        new_img[:,:,0] = green[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = red[:,:,2]
+
+    if(choice==2):
+        new_img[:,:,0] = blue[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = green[:,:,2]
+
+    else:
+        new_img[:,:,0] = green[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = green[:,:,2]
+
+    return new_img
+
+def make_red(imagem, blue, green, red, choice):
+
+
+    new_img = np.zeros((imagem.shape[0],imagem.shape[1],imagem.shape[2]), dtype = np.uint8)
+
+    if(choice==1):
+
+        new_img[:,:,0] = blue[:,:,0]
+        new_img[:,:,1] = red[:,:,1]
+        new_img[:,:,2] = red[:,:,2]
+
+    if(choice==2):
+        new_img[:,:,0] = red[:,:,0]
+        new_img[:,:,1] = green[:,:,1]
+        new_img[:,:,2] = red[:,:,2]
+
+    else:
+        new_img[:,:,0] = red[:,:,0]
+        new_img[:,:,1] = red[:,:,1]
+        new_img[:,:,2] = red[:,:,2]
+
+    return new_img
+
 def exphisColor(color, index):
     expanded =  np.zeros( (color.shape[0], color.shape[1], color.shape[2]), dtype = np.uint8 )
 

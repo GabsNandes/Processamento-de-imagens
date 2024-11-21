@@ -1,7 +1,7 @@
 
 import cv2 
 from utils.generalutils import *
-from utils.graphutils import calcHists, plotGrayOnly
+from utils.graphutils import calcHists
 from utils.colorutils import exphisColor, combine_bgr
 from utils.graphutils import plothists
 

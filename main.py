@@ -4,7 +4,7 @@ import glob
 import subprocess
 
 # Specify the path to your repository (folder)
-repo_path = "/Users/regin/OneDrive/Documentos/Nova pasta/scripts"
+repo_path = os.getcwd() + '/scripts'
 
 # Change the working directory to the repository
 os.chdir(repo_path)

@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 def select_imagem():
 
@@ -21,19 +22,25 @@ def select_imagem():
 
     filetype = dicttypes[tipoimagem]
 
-    nomeimagem = '/Users/regin/OneDrive/Documentos/Nova pasta/images/'+nomeimagem+filetype
+    basepath =  Path(__file__).resolve().parent.parent.parent
 
+    nomeimagem = nomeimagem+filetype
+    
+    nomeimagem = basepath /'images'/nomeimagem
+
+    print(nomeimagem)
 
     access = os.path.exists(nomeimagem)
 
 
     while(access == False):
         nomeimagem = input("Nome da imagem: ")
-        tipoimagem  = input("1 -> jpg, 2 -> png, 3 -> jpeg")
+        tipoimagem  = input("1 -> jpg, 2 -> png, 3 -> jpeg: ")
 
 
         filetype = dicttypes[tipoimagem]
-        nomeimagem = 'images/'+nomeimagem+filetype
+        nomeimagem = nomeimagem+filetype
+        nomeimagem = basepath/'images'/nomeimagem
         
         access = os.path.exists(nomeimagem)
 

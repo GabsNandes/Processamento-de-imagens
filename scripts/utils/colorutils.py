@@ -161,7 +161,7 @@ def negative_color(color, index):
     for i in range(color.shape[0]):
         for j in range(color.shape[1]):
 
-            neg_color[i,j, index] = np.abs(color[i,j,index] - 255)
+            neg_color[i,j, index] = np.abs(255-color[i,j,index])
 
 
     return neg_color

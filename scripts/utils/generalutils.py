@@ -1,50 +1,42 @@
-import cv2 
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+import glob
 
 def select_imagem():
 
-    dicttypes = {
-        
-        "1": ".jpg",
-        "2": ".png",
-        "3": ".jpeg"
-        
-        
-        }
-
-
-    nomeimagem = input("Nome da imagem: ")
-
-    tipoimagem  = input("1 -> jpg, 2 -> png, 3 -> jpeg: ")
-
-    filetype = dicttypes[tipoimagem]
-
     basepath =  Path(__file__).resolve().parent.parent.parent
-
-    nomeimagem = nomeimagem+filetype
     
-    nomeimagem = basepath /'images'/nomeimagem
+    basepath = basepath /'images'
 
-    print(nomeimagem)
+    os.chdir(basepath)
 
-    access = os.path.exists(nomeimagem)
-
-
-    while(access == False):
-        nomeimagem = input("Nome da imagem: ")
-        tipoimagem  = input("1 -> jpg, 2 -> png, 3 -> jpeg: ")
+    python_files = glob.glob("*")
 
 
-        filetype = dicttypes[tipoimagem]
-        nomeimagem = nomeimagem+filetype
-        nomeimagem = basepath/'images'/nomeimagem
-        
-        access = os.path.exists(nomeimagem)
+    file_num = 0
+    running = True
 
-    return nomeimagem
+
+    while running:
+        file_num = 0
+        for file in python_files:
+
+            print(file_num,"-",file)
+            file_num+=1
+
+
+        file_choice=int(input("Pick number to select a file,"))
+
+        if(file_choice>=len(python_files)):
+            print("Inavlid file....")
+            running = False
+        else:
+            nomeimagem = basepath/python_files[file_choice]
+
+        return nomeimagem
 
 def split_colors(imagem):
     

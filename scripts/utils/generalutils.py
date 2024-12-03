@@ -36,7 +36,7 @@ def select_imagem():
         else:
             nomeimagem = basepath/python_files[file_choice]
 
-        return nomeimagem
+        return str(nomeimagem)
 
 def split_colors(imagem):
     

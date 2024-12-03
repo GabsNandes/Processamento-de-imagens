@@ -136,6 +136,34 @@ def compareplotGrayOnly(base, gray_hist, normalized_hist):
     # Adjust layout for better appearance
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
+
+def compareplotGrayOnlyThree(base, gray_hist, normalized_hist, normalized_hist_og):
+    
+
+    fig, axs = plt.subplots(3, 1, figsize=(12, 10))
+    fig.suptitle('Different Datasets Histograms', fontsize=16)
+
+    axs[0].bar(base, gray_hist, color='g')
+    axs[0].set_title('F1')
+    axs[0].set_xlabel('X')
+    axs[0].set_ylabel('y')
+
+    # Blue dataset
+    axs[1].bar(base, normalized_hist, color='g')
+    axs[1].set_title('F2')
+    axs[1].set_xlabel('X')
+    axs[1].set_ylabel('Y')
+
+    # Blue dataset
+    axs[2].bar(base, normalized_hist_og, color='g')
+    axs[2].set_title('F3')
+    axs[2].set_xlabel('X')
+    axs[2].set_ylabel('Y')
+
+    # Adjust layout for better appearance
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.show()
+
 def detectvaley(base, data):
 
     plt.bar(base, data, color='grey')
@@ -148,3 +176,65 @@ def detectvaley(base, data):
     # Adjust layout for better appearance
     plt.tight_layout(rect=[0, 0, 1, 0.96])
     plt.show()
+
+
+def generatehist():
+
+    base = [0]*256
+    frequency = [0] * 256
+
+    summary = (1/128)/128
+
+    choice = int(input("1- aumentar contraste / 2 - reduzir contraste: "))
+
+    for i in range(256):
+            
+            base[i] = i
+
+
+    if(choice == 1):
+
+        value = 0
+
+        for b in range(256):
+            
+            if(b<128):
+                
+                frequency[b] = value
+                value = value + summary
+
+            else:
+                frequency[b] = value
+                value = value - summary
+
+    else:
+
+        value = 1/128
+
+        for b in range(256):
+            
+            if(b<128):
+                
+                frequency[b] = value
+                value = value - summary
+
+            else:
+                frequency[b] = value
+                value = value + summary
+
+
+    plt.bar(base, frequency, color='grey')
+    plt.show()
+
+    accumulated_hist = [0]*256
+    acc = 0
+
+    
+    for j in range(256):
+        acc = frequency[j] + acc
+        accumulated_hist[j] = acc
+
+    plt.bar(base, accumulated_hist, color='grey')
+    plt.show()
+        
+    return frequency, accumulated_hist

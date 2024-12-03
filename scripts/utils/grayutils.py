@@ -203,3 +203,133 @@ def generate_normalized_img(gray, normalized_hist):
                     normalized_img[i,j] = 255
             
     return normalized_img, accumulated_hist
+
+
+def new_gray_level(gray, accumulated):
+    normalized_img = np.zeros( (gray.shape[0], gray.shape[1]), dtype = np.uint8 )
+
+    gray_level = [0]*256
+
+    for k in range(256):
+
+        gray_level[k] = round(accumulated[k]*255)
+        print(gray_level[k])
+
+    for i in range(gray.shape[0]):
+        for j in range(gray.shape[1]):
+
+            normalized_img[i,j] = gray_level[gray[i,j]]
+
+            
+            
+    return normalized_img
+
+
+def add_black_border(gray, mask_size):
+
+    mask_size-=1
+
+    border_size = int(mask_size/2)
+
+    print("-----",border_size)
+
+    img_with_border = np.zeros( (gray.shape[0]+border_size, gray.shape[1]+border_size), dtype = np.uint8 )
+    
+    for j in range(border_size):
+        for i in range(img_with_border.shape[0]):
+        
+            img_with_border[i,j] = 0
+
+    for k in range(border_size):
+        for l in range(img_with_border.shape[1]):
+        
+            img_with_border[k,l] = 0
+
+    
+    for g in range(mask_size, img_with_border.shape[0]-mask_size):
+        for h in range(mask_size, img_with_border.shape[1]-mask_size):
+            img_with_border[g,h] = gray[g-mask_size,h-mask_size]
+
+    return img_with_border    
+
+
+def convolucao_teste(img_border, mask_size):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+
+
+    conv_matrix = np.array([[0,  1, 0],
+                            [1, -4, 1],
+                            [0,  1, 0]])
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    for j in range(border_size, (img_border.shape[0]-border_size)):
+        for k in range(border_size, (img_border.shape[1]-border_size)):
+
+            
+            part = (img_border[cut1:last_part1,cut2:last_part2])*conv_matrix
+
+            sumol = part.sum()
+            
+
+            if(sumol>255):
+                sumol = 255
+            if (sumol<0):
+                sumol = 0
+
+            img_conv[j-border_size,k-border_size] = sumol
+            
+            if(last_part2<img_border.shape[1]-border_size):
+                cut2 +=1
+                last_part2+=1
+            
+        cut2=0
+        last_part2=mask_size
+
+
+        if(last_part1<img_border.shape[0]-border_size):
+            cut1 +=1
+            last_part1+=1
+            
+
+
+    return img_conv
+
+
+            
+
+
+
+
+
+
+
+
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+

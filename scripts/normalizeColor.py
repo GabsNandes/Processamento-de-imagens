@@ -51,11 +51,9 @@ print("Red done!")
 
 
 new_img = combine_bgr(imagem, normalized_blue_img, normalized_green_img, normalized_red_img)
+
+
 cv2.imshow("Combined", new_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
-
-
-
 cv2.imwrite("out.jpg", imagem)

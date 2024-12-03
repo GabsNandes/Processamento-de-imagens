@@ -1,7 +1,7 @@
 
 import cv2 
 from utils.generalutils import *
-from utils.grayutils import add_black_border, convolucao_teste, convolucao
+from utils.grayutils import add_black_border, convolucao
 from utils.graphutils import calcHists, plotGrayOnly
 
 
@@ -35,7 +35,7 @@ print(border_img.shape[0])
 
 
 
-conv_img = convolucao_teste(border_img,3)
+conv_img = convolucao(border_img,3)
 
 base, data, _, _, _ = calcHists(conv_img, blue, green, red, imagem)
 plotGrayOnly(base, data)

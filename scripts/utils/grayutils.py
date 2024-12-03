@@ -253,7 +253,7 @@ def add_black_border(gray, mask_size):
     return img_with_border    
 
 
-def convolucao_teste(img_border, mask_size):
+def convolucao(img_border, mask_size):
 
     
     part =  np.zeros( (mask_size, mask_size), dtype = int )
@@ -292,17 +292,17 @@ def convolucao_teste(img_border, mask_size):
 
             img_conv[j-border_size,k-border_size] = sumol
             
-            if(last_part2<img_border.shape[1]-border_size):
-                cut2 +=1
-                last_part2+=1
+            
+            cut2 +=1
+            last_part2+=1
             
         cut2=0
         last_part2=mask_size
 
 
-        if(last_part1<img_border.shape[0]-border_size):
-            cut1 +=1
-            last_part1+=1
+        
+        cut1 +=1
+        last_part1+=1
             
 
 

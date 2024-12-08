@@ -31,4 +31,4 @@ while running:
         running = False
     else:
         print("Selected: ", python_files[file_choice])
-        subprocess.run(["python", python_files[file_choice]], check=True)
+        subprocess.run(["python3", python_files[file_choice]], check=True)

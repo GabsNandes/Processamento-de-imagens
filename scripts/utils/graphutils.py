@@ -3,6 +3,22 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+def singleHists(gray):
+    arr0 = [0] * 256
+    base = [0] * 256
+
+
+    for b in range(256):
+        base[b] = b
+        
+    for i in gray:
+        for j in i:
+            arr0[j] += 1
+    data = arr0
+
+    
+    return base, data
+
 
 def calcHists(gray, blue, green, red, imagem):
     arr0 = [0] * 256

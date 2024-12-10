@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def blackandwhite(blackandwhiteimg):
 
-    cutOffPoint = int(input("Inisra ponto de corte: "))
+    cutOffPoint = 127
 
     for i in range(blackandwhiteimg.shape[0]):
         for j in range(blackandwhiteimg.shape[1]):
@@ -306,6 +306,90 @@ def convolucao(img_border, mask_size):
             
 
 
+    return img_conv
+
+
+def erosao(img_border, mask_size, reps, cross):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+
+
+    conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
+
+    if(cross == True):
+        
+
+        conv_matrix[0,0] = 0
+        conv_matrix[mask_size-1,0] = 0
+        conv_matrix[0,mask_size-1] = 0
+        conv_matrix[mask_size-1,mask_size-1] = 0
+
+        print(conv_matrix)
+
+        values, counts = np.unique(conv_matrix, return_counts=True)
+
+        print(counts)
+
+        count255 = counts[1]
+
+    equal_matrix = conv_matrix*255
+
+    
+    print(conv_matrix)
+    print(equal_matrix)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    for i in range(reps):
+
+        cut1 = 0
+        cut2 = 0
+        last_part1 = mask_size
+        last_part2 = mask_size
+
+        print("LOOP", i+1)
+
+        for j in range(border_size, (img_border.shape[0]-border_size)):
+            for k in range(border_size, (img_border.shape[1]-border_size)):
+
+                
+
+                part = (img_border[cut1:last_part1,cut2:last_part2])
+
+                multmatrix = (part*conv_matrix)
+
+        
+                if((multmatrix == equal_matrix).all()):
+                    img_conv[j-border_size,k-border_size] = 255
+                else:
+                    img_conv[j-border_size,k-border_size] = 0
+                
+                
+                
+                
+                cut2 +=1
+                last_part2+=1
+                
+            cut2=0
+            last_part2=mask_size
+
+
+            
+            cut1 +=1
+            last_part1+=1
+            
     return img_conv
 
 

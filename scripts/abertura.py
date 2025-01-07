@@ -1,6 +1,6 @@
 import cv2 
 from utils.generalutils import *
-from utils.grayutils import blackandwhite, add_black_border, erosao
+from utils.grayutils import blackandwhite, add_black_border, erosao, dilatacao
 from utils.graphutils import singleHists, plotGrayOnly
 
 nomeimagem = select_imagem()    
@@ -39,14 +39,17 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 
-border_img = add_black_border(bw,41)
+border_img = add_black_border(bw,3)
 
 
-erodedimg = erosao(border_img, 11, 5, True)
+erodedimg = erosao(border_img, 3, 1, True)
 
-erodedimg_res = cv2.resize(erodedimg, target_size)
+dilatedimg = dilatacao(erodedimg, 3, 2, True)
 
-top_row = cv2.hconcat([bw_res, erodedimg_res])
+dilatedimg_res = cv2.resize(dilatedimg, target_size)
+
+top_row = cv2.hconcat([bw_res, dilatedimg_res])
+
 combined_image = cv2.vconcat([top_row])
 
 

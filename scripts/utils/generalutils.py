@@ -56,3 +56,17 @@ def split_colors(imagem):
 
             
     return gray, blue, green, red
+
+
+def adjustpart(part,mask):
+
+    new_part = np.zeros((mask,mask))
+
+    if part.shape[0] > 0 and part.shape[1] > 0:
+        new_part[:part.shape[0], :part.shape[1]] = part
+
+    return new_part
+
+
+    
+

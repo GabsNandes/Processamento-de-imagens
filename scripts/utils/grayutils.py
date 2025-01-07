@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from utils.generalutils import adjustpart
 
 
 def blackandwhite(blackandwhiteimg):
@@ -352,6 +353,8 @@ def erosao(img_border, mask_size, reps, cross):
     last_part1 = mask_size
     last_part2 = mask_size
 
+    img_conv_returned = img_border
+
     for i in range(reps):
 
         cut1 = 0
@@ -361,12 +364,12 @@ def erosao(img_border, mask_size, reps, cross):
 
         print("LOOP", i+1)
 
-        for j in range(border_size, (img_border.shape[0]-border_size)):
-            for k in range(border_size, (img_border.shape[1]-border_size)):
+        for j in range(border_size, (img_conv_returned.shape[0]-border_size)):
+            for k in range(border_size, (img_conv_returned.shape[1]-border_size)):
 
                 
 
-                part = (img_border[cut1:last_part1,cut2:last_part2])
+                part = (img_conv_returned[cut1:last_part1,cut2:last_part2])
 
                 multmatrix = (part*conv_matrix)
 
@@ -389,8 +392,109 @@ def erosao(img_border, mask_size, reps, cross):
             
             cut1 +=1
             last_part1+=1
+
+        img_conv_returned = img_conv
             
-    return img_conv
+    return img_conv_returned
+
+
+def dilatacao(bwimg, mask_size, reps, cross):
+
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+
+    img_conv = np.zeros( (bwimg.shape[0], bwimg.shape[1]), dtype = np.uint8)
+
+
+    conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
+
+    multmatrix = np.zeros( (mask_size, mask_size), dtype = int )
+
+    if(cross == True):
+        
+
+        conv_matrix[0,0] = 0
+        conv_matrix[mask_size-1,0] = 0
+        conv_matrix[0,mask_size-1] = 0
+        conv_matrix[mask_size-1,mask_size-1] = 0
+
+        print(conv_matrix)
+
+        values, counts = np.unique(conv_matrix, return_counts=True)
+
+        print(counts)
+
+        count255 = counts[1]
+
+    equal_matrix = conv_matrix*255
+
+    help = np.zeros((1,3), dtype = np.uint8)
+    print(help)
+
+    
+    print(conv_matrix)
+    print(equal_matrix)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    img_conv_returned = bwimg
+
+    for i in range(reps):
+
+        cut1 = 0
+        cut2 = 0
+        last_part1 = mask_size
+        last_part2 = mask_size
+
+        print("LOOP", i+1)
+
+        for j in range(0, (img_conv_returned.shape[0])):
+            for k in range(0, (img_conv_returned.shape[1])):
+
+                
+
+                part = (bwimg[cut1:last_part1,cut2:last_part2])
+
+
+                if part.shape[0]<mask_size or part.shape[1]<mask_size:
+
+                    part = adjustpart(part,mask_size)
+                
+
+                multmatrix = part * conv_matrix
+
+        
+                
+                if np.any(multmatrix == 255 ):
+                    img_conv[j, k] = 255
+                else:
+                    img_conv[j, k] = 0
+                
+                
+                
+                
+                cut2 +=1
+                last_part2+=1
+
+            
+                
+            cut2=0
+            last_part2=mask_size
+
+
+            
+            cut1 +=1
+            last_part1+=1
+
+        img_conv_returned = img_conv
+            
+    return img_conv_returned
 
 
             

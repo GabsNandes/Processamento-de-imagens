@@ -39,20 +39,21 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 
-border_img = add_black_border(bw,3)
 
 
-erodedimg = erosao(border_img, 3, 2, True)
-
-cv2.imshow("Combined Image", erodedimg)
+dilatedimg = dilatacao(bw, 15, 2, True)
+cv2.imshow("Combined Image", dilatedimg)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-dilatedimg = dilatacao(erodedimg, 3, 2, True)
+border_img = add_black_border(dilatedimg,15)
 
-dilatedimg_res = cv2.resize(dilatedimg, target_size)
+erodedimg = erosao(border_img, 15, 1, True)
 
-top_row = cv2.hconcat([bw_res, dilatedimg_res])
+
+erodedimg_res = cv2.resize(erodedimg, target_size)
+
+top_row = cv2.hconcat([bw_res, erodedimg_res])
 
 combined_image = cv2.vconcat([top_row])
 

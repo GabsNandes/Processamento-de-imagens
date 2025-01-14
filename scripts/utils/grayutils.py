@@ -234,7 +234,7 @@ def add_black_border(gray, mask_size):
 
     print("-----",border_size)
 
-    img_with_border = np.zeros( (gray.shape[0]+border_size, gray.shape[1]+border_size), dtype = np.uint8 )
+    img_with_border = np.zeros( (gray.shape[0]+mask_size, gray.shape[1]+mask_size), dtype = np.uint8 )
     
     for j in range(border_size):
         for i in range(img_with_border.shape[0]):
@@ -247,9 +247,9 @@ def add_black_border(gray, mask_size):
             img_with_border[k,l] = 0
 
     
-    for g in range(mask_size, img_with_border.shape[0]-mask_size):
-        for h in range(mask_size, img_with_border.shape[1]-mask_size):
-            img_with_border[g,h] = gray[g-mask_size,h-mask_size]
+    for g in range(border_size, img_with_border.shape[0]-border_size):
+        for h in range(border_size, img_with_border.shape[1]-border_size):
+            img_with_border[g,h] = gray[g-border_size,h-border_size]
 
     return img_with_border    
 
@@ -495,6 +495,171 @@ def dilatacao(bwimg, mask_size, reps, cross):
         img_conv_returned = img_conv
             
     return img_conv_returned
+
+
+def erosaohit(img_border, mask_size, reps, inverted):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-bordr, img_border.shape[1]-bordr), dtype = np.uint8)
+
+
+    if(inverted != True):
+        
+        conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
+        
+        conv_matrix[1:bordr, 1:bordr] = 0
+
+        print(conv_matrix)
+
+
+    else:
+
+        conv_matrix = np.zeros((mask_size, mask_size), dtype = np.uint8)
+        
+        conv_matrix[1:bordr, 1:bordr] = 1
+
+        print(conv_matrix)
+
+
+    equal_matrix = conv_matrix*255
+
+    
+    print(conv_matrix)
+    print(equal_matrix)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    img_conv_returned = img_border
+
+    for i in range(reps):
+
+        cut1 = 0
+        cut2 = 0
+        last_part1 = mask_size
+        last_part2 = mask_size
+
+        print("LOOP", i+1)
+
+        for j in range(border_size, (img_conv_returned.shape[0]-border_size)):
+            for k in range(border_size, (img_conv_returned.shape[1]-border_size)):
+
+                
+
+                part = (img_conv_returned[cut1:last_part1,cut2:last_part2])
+
+                multmatrix = (part*conv_matrix)
+                print(multmatrix)
+
+        
+                if((multmatrix == equal_matrix).all()):
+                    img_conv[j-border_size,k-border_size] = 255
+                else:
+                    img_conv[j-border_size,k-border_size] = 0
+                
+                
+                
+                
+                cut2 +=1
+                last_part2+=1
+                
+            cut2=0
+            last_part2=mask_size
+
+
+            
+            cut1 +=1
+            last_part1+=1
+
+        img_conv_returned = img_conv
+            
+    return img_conv_returned
+
+
+def invert_img(bwimg):
+
+    img_inv = np.zeros( (bwimg.shape[0], bwimg.shape[1]), dtype = np.uint8)
+
+
+
+    for j in range(0, (bwimg.shape[0])):
+            for k in range(0, (bwimg.shape[1])):
+
+                if(bwimg[j,k]==255):
+                    img_inv[j,k] = 0
+                else:
+                    img_inv[j,k] = 255
+
+    
+    return img_inv
+
+
+
+def hitormiss(bwimg, mask_size):
+
+    border_img = add_black_border(bwimg, 5)
+
+    mask_size -=1
+
+    plt.imshow(border_img, cmap = "gray")
+    plt.show()
+
+    hitormissimg = np.zeros( (border_img.shape[0]-mask_size, border_img.shape[1]-mask_size), dtype = np.uint8)
+
+
+
+    eros1 = erosaohit(border_img, 5, 1, False)
+    eros2 = erosaohit(invert_img(border_img), 5, 1, True)
+
+    eros1 = eros1/255
+    eros2 = eros2/255
+
+    hitormissimg = (eros1*eros2)*255
+
+
+    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    fig.suptitle('Different Datasets Histograms', fontsize=16)
+
+    axs[0, 0].imshow(bwimg, cmap = "gray")
+    axs[0, 0].set_title('Grey Dataset')
+    
+
+    # Blue dataset
+    axs[0, 1].imshow(eros2, cmap = "gray")
+    axs[0, 1].set_title('Blue Dataset')
+    
+
+    # Green dataset
+    axs[1, 0].imshow(eros1, cmap = "gray")
+    axs[1, 0].set_title('Green Dataset')
+    
+
+    # Red dataset
+    axs[1, 1].imshow(hitormissimg, cmap = "gray")
+    axs[1, 1].set_title('Red Dataset')
+    
+
+    # Adjust layout for better appearance
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.show()
+
+    
+    return hitormissimg
+
+
+
+
+
 
 
             

@@ -1,6 +1,6 @@
 import cv2 
 from utils.generalutils import *
-from utils.grayutils import blackandwhite, hitormiss
+from utils.grayutils import blackandwhite, hitormiss, invert_img
 from utils.graphutils import singleHists, plotGrayOnly
 
 nomeimagem = select_imagem()    
@@ -26,6 +26,7 @@ gray, blue, green, red = split_colors(imagem)
 #cv2.imshow("Blackandwhite", blackwhiteimg)
 
 bw = blackandwhite(gray)
+
 
 
 base, data = singleHists(bw)

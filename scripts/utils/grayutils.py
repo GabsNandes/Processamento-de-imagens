@@ -559,7 +559,6 @@ def erosaohit(img_border, mask_size, reps, inverted):
                 part = (img_conv_returned[cut1:last_part1,cut2:last_part2])
 
                 multmatrix = (part*conv_matrix)
-                print(multmatrix)
 
         
                 if((multmatrix == equal_matrix).all()):
@@ -607,7 +606,7 @@ def invert_img(bwimg):
 
 def hitormiss(bwimg, mask_size):
 
-    border_img = add_black_border(bwimg, 5)
+    border_img = add_black_border(bwimg, 7)
 
     mask_size -=1
 
@@ -618,8 +617,8 @@ def hitormiss(bwimg, mask_size):
 
 
 
-    eros1 = erosaohit(border_img, 5, 1, False)
-    eros2 = erosaohit(invert_img(border_img), 5, 1, True)
+    eros1 = erosaohit(border_img, 7, 1, False)
+    eros2 = erosaohit(invert_img(border_img), 7, 1, True)
 
     eros1 = eros1/255
     eros2 = eros2/255
@@ -627,7 +626,7 @@ def hitormiss(bwimg, mask_size):
     hitormissimg = (eros1*eros2)*255
 
 
-    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+    fig, axs = plt.subplots(2, 3, figsize=(12, 10))
     fig.suptitle('Different Datasets Histograms', fontsize=16)
 
     axs[0, 0].imshow(bwimg, cmap = "gray")
@@ -635,18 +634,21 @@ def hitormiss(bwimg, mask_size):
     
 
     # Blue dataset
-    axs[0, 1].imshow(eros2, cmap = "gray")
-    axs[0, 1].set_title('Blue Dataset')
+    axs[1, 0].imshow(invert_img(bwimg), cmap = "gray")
+    axs[1, 0].set_title('Blue Dataset')
     
 
     # Green dataset
-    axs[1, 0].imshow(eros1, cmap = "gray")
-    axs[1, 0].set_title('Green Dataset')
+    axs[0, 1].imshow(eros1, cmap = "gray")
+    axs[0, 1].set_title('Green Dataset')
     
 
     # Red dataset
-    axs[1, 1].imshow(hitormissimg, cmap = "gray")
+    axs[1, 1].imshow(eros2, cmap = "gray")
     axs[1, 1].set_title('Red Dataset')
+
+    axs[1, 2].imshow(hitormissimg, cmap = "gray")
+    axs[1, 2].set_title('Red Dataset')
     
 
     # Adjust layout for better appearance

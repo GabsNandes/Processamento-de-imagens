@@ -235,16 +235,6 @@ def add_black_border(gray, mask_size):
     print("-----",border_size)
 
     img_with_border = np.zeros( (gray.shape[0]+mask_size, gray.shape[1]+mask_size), dtype = np.uint8 )
-    
-    for j in range(border_size):
-        for i in range(img_with_border.shape[0]):
-        
-            img_with_border[i,j] = 0
-
-    for k in range(border_size):
-        for l in range(img_with_border.shape[1]):
-        
-            img_with_border[k,l] = 0
 
     
     for g in range(border_size, img_with_border.shape[0]-border_size):
@@ -310,7 +300,7 @@ def convolucao(img_border, mask_size):
     return img_conv
 
 
-def erosao(img_border, mask_size, reps, cross):
+def erosao(img_border, mask_size, reps, cross, inv):
 
     
     part =  np.zeros( (mask_size, mask_size), dtype = int )
@@ -319,7 +309,7 @@ def erosao(img_border, mask_size, reps, cross):
     border_size = int(bordr/2)
 
 
-    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+    img_conv = np.zeros( (img_border.shape[0]-bordr, img_border.shape[1]-bordr), dtype = np.uint8)
 
 
     conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
@@ -373,11 +363,19 @@ def erosao(img_border, mask_size, reps, cross):
 
                 multmatrix = (part*conv_matrix)
 
-        
-                if((multmatrix == equal_matrix).all()):
-                    img_conv[j-border_size,k-border_size] = 255
+
+                if(inv):
+                    if((multmatrix == equal_matrix).all()):
+                        img_conv[j-border_size,k-border_size] = 0
+                    else:
+                        img_conv[j-border_size,k-border_size] = 255
+
                 else:
-                    img_conv[j-border_size,k-border_size] = 0
+
+                    if((multmatrix == equal_matrix).all()):
+                        img_conv[j-border_size,k-border_size] = 255
+                    else:
+                        img_conv[j-border_size,k-border_size] = 0
                 
                 
                 
@@ -398,103 +396,60 @@ def erosao(img_border, mask_size, reps, cross):
     return img_conv_returned
 
 
-def dilatacao(bwimg, mask_size, reps, cross):
-
-    part =  np.zeros( (mask_size, mask_size), dtype = int )
-    bordr = mask_size -1
-
-
-    img_conv = np.zeros( (bwimg.shape[0], bwimg.shape[1]), dtype = np.uint8)
-
-
-    conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
-
-    multmatrix = np.zeros( (mask_size, mask_size), dtype = int )
-
-    if(cross == True):
-        
-
-        conv_matrix[0,0] = 0
-        conv_matrix[mask_size-1,0] = 0
-        conv_matrix[0,mask_size-1] = 0
-        conv_matrix[mask_size-1,mask_size-1] = 0
-
-        print(conv_matrix)
-
-        values, counts = np.unique(conv_matrix, return_counts=True)
-
-        print(counts)
-
-        count255 = counts[1]
-
-    equal_matrix = conv_matrix*255
-
-    help = np.zeros((1,3), dtype = np.uint8)
-    print(help)
+def dilatacao(bwimg, mask_size, reps, cross, inv):
+    
+    img_conv_returned = bwimg.copy()
+    
+    
+    conv_matrix = np.ones((mask_size, mask_size), dtype=np.uint8)
+    
+    
+    if cross:
+        conv_matrix[0, 0] = 0
+        conv_matrix[mask_size-1, 0] = 0
+        conv_matrix[0, mask_size-1] = 0
+        conv_matrix[mask_size-1, mask_size-1] = 0
 
     
-    print(conv_matrix)
-    print(equal_matrix)
+    if inv:
+        bwimg = invert_img(bwimg)
 
-    pixel = 1
+   
+    for _ in range(reps):
+        img_conv = np.zeros_like(bwimg)
 
-    cut1 = 0
-    cut2 = 0
-    last_part1 = mask_size
-    last_part2 = mask_size
+        
+        for i in range(bwimg.shape[0]):
+            for j in range(bwimg.shape[1]):
+               
+                top = max(0, i - mask_size // 2)
+                bottom = min(bwimg.shape[0], i + mask_size // 2 + 1)
+                left = max(0, j - mask_size // 2)
+                right = min(bwimg.shape[1], j + mask_size // 2 + 1)
 
-    img_conv_returned = bwimg
-
-    for i in range(reps):
-
-        cut1 = 0
-        cut2 = 0
-        last_part1 = mask_size
-        last_part2 = mask_size
-
-        print("LOOP", i+1)
-
-        for j in range(0, (img_conv_returned.shape[0])):
-            for k in range(0, (img_conv_returned.shape[1])):
+                part = bwimg[top:bottom, left:right]
 
                 
-
-                part = (bwimg[cut1:last_part1,cut2:last_part2])
-
-
-                if part.shape[0]<mask_size or part.shape[1]<mask_size:
-
-                    part = adjustpart(part,mask_size)
-                
+                if part.shape[0] < mask_size or part.shape[1] < mask_size:
+                    part = np.pad(part, [(0, mask_size - part.shape[0]), (0, mask_size - part.shape[1])], mode='constant', constant_values=0)
 
                 multmatrix = part * conv_matrix
 
-        
-                
-                if np.any(multmatrix == 255 ):
-                    img_conv[j, k] = 255
+
+                if np.any(multmatrix == 255):
+                    img_conv[i, j] = 255
                 else:
-                    img_conv[j, k] = 0
-                
-                
-                
-                
-                cut2 +=1
-                last_part2+=1
+                    img_conv[i, j] = 0
 
-            
-                
-            cut2=0
-            last_part2=mask_size
-
-
-            
-            cut1 +=1
-            last_part1+=1
-
+        
         img_conv_returned = img_conv
-            
+
+    
+    if inv:
+        img_conv_returned = invert_img(img_conv_returned)
+
     return img_conv_returned
+
 
 
 def erosaohit(img_border, mask_size, reps, inverted):
@@ -581,6 +536,9 @@ def erosaohit(img_border, mask_size, reps, inverted):
             last_part1+=1
 
         img_conv_returned = img_conv
+
+    
+
             
     return img_conv_returned
 
@@ -657,6 +615,73 @@ def hitormiss(bwimg, mask_size):
 
     
     return hitormissimg
+
+def subtracao(bw, og):
+
+    img_sub = np.zeros( (bw.shape[0], bw.shape[1]), dtype = np.uint8)
+
+
+
+
+
+    for i in range(img_sub.shape[0]):
+        for j in range(img_sub.shape[1]):
+
+             
+
+            diff = np.abs(bw[i, j] - og[i, j])
+
+
+            if(diff==0):
+                img_sub[i,j] = 255
+            else:
+                img_sub[i,j] = 0
+                
+        
+    return img_sub
+
+
+def equals (img1, img2):
+
+
+    for i in range(img1.shape[0]):
+        for j in range(img1.shape[1]):
+
+            if img1[i,j]!=img2[i,j]:
+                return False
+            
+    
+    return True
+
+def inter (img1, img2):
+    
+    interimg = np.ones( (img1.shape[0], img1.shape[1]), dtype = np.uint8)
+    interimg = interimg*255
+
+    for i in range(img1.shape[0]):
+        for j in range(img1.shape[1]):
+
+            if img1[i,j]==img2[i,j]:
+                interimg[i,j] = img1[i,j]
+            
+            
+    
+    return interimg
+
+
+def combine(img1, img2):
+
+    img1 = img1/255
+    img2 = img2/255
+
+    imgcomb = img1 * img2
+
+    imgcomb = imgcomb*255
+
+    return imgcomb
+
+
+
 
 
 

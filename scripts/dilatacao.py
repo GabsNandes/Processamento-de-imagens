@@ -43,7 +43,7 @@ bw_res = blackandwhite(bw_res)
 
 
 
-dilatedimg = dilatacao(bw_res, 23, 10, True)
+dilatedimg = dilatacao(bw_res, 23, 10, True, False)
 
 dilatedimg_res = cv2.resize(dilatedimg, target_size)
 

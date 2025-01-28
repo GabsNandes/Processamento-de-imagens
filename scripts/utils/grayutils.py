@@ -300,100 +300,45 @@ def convolucao(img_border, mask_size):
     return img_conv
 
 
+import numpy as np
+
 def erosao(img_border, mask_size, reps, cross, inv):
-
     
-    part =  np.zeros( (mask_size, mask_size), dtype = int )
-    bordr = mask_size -1
+   
 
-    border_size = int(bordr/2)
-
-
-    img_conv = np.zeros( (img_border.shape[0]-bordr, img_border.shape[1]-bordr), dtype = np.uint8)
+    if inv:
+        img_border = invert_img(img_border)
 
 
-    conv_matrix = np.ones((mask_size, mask_size), dtype = np.uint8)
-
-    if(cross == True):
+    conv_matrix = np.ones((mask_size, mask_size), dtype=np.uint8)
+    if cross:
+        conv_matrix[0, 0] = conv_matrix[0, -1] = 0
+        conv_matrix[-1, 0] = conv_matrix[-1, -1] = 0
+    
+    # Create the output image
+    border_size = mask_size // 2
+    img_conv = img_border.copy()
+    
+    for _ in range(reps):
+        padded_img = np.pad(img_conv, pad_width=border_size, mode='constant', constant_values=0)
+        output = np.zeros_like(img_conv)
         
-
-        conv_matrix[0,0] = 0
-        conv_matrix[mask_size-1,0] = 0
-        conv_matrix[0,mask_size-1] = 0
-        conv_matrix[mask_size-1,mask_size-1] = 0
-
-        print(conv_matrix)
-
-        values, counts = np.unique(conv_matrix, return_counts=True)
-
-        print(counts)
-
-        count255 = counts[1]
-
-    equal_matrix = conv_matrix*255
-
-    
-    print(conv_matrix)
-    print(equal_matrix)
-
-    pixel = 1
-
-    cut1 = 0
-    cut2 = 0
-    last_part1 = mask_size
-    last_part2 = mask_size
-
-    img_conv_returned = img_border
-
-    for i in range(reps):
-
-        cut1 = 0
-        cut2 = 0
-        last_part1 = mask_size
-        last_part2 = mask_size
-
-        print("LOOP", i+1)
-
-        for j in range(border_size, (img_conv_returned.shape[0]-border_size)):
-            for k in range(border_size, (img_conv_returned.shape[1]-border_size)):
-
-                
-
-                part = (img_conv_returned[cut1:last_part1,cut2:last_part2])
-
-                multmatrix = (part*conv_matrix)
-
-
-                if(inv):
-                    if((multmatrix == equal_matrix).all()):
-                        img_conv[j-border_size,k-border_size] = 0
-                    else:
-                        img_conv[j-border_size,k-border_size] = 255
-
+        # Perform erosion
+        for i in range(border_size, padded_img.shape[0] - border_size):
+            for j in range(border_size, padded_img.shape[1] - border_size):
+                region = padded_img[i-border_size:i+border_size+1, j-border_size:j+border_size+1]
+                if np.array_equal(region * conv_matrix, conv_matrix * 255):
+                    output[i-border_size, j-border_size] = 255
                 else:
+                    output[i-border_size, j-border_size] = 0
+        
+        img_conv = output
 
-                    if((multmatrix == equal_matrix).all()):
-                        img_conv[j-border_size,k-border_size] = 255
-                    else:
-                        img_conv[j-border_size,k-border_size] = 0
-                
-                
-                
-                
-                cut2 +=1
-                last_part2+=1
-                
-            cut2=0
-            last_part2=mask_size
+    if inv:
+        img_conv = invert_img(img_conv)
 
+    return img_conv
 
-            
-            cut1 +=1
-            last_part1+=1
-
-        img_conv_returned = img_conv
-            
-    return img_conv_returned
 
 
 def dilatacao(bwimg, mask_size, reps, cross, inv):
@@ -445,7 +390,7 @@ def dilatacao(bwimg, mask_size, reps, cross, inv):
         img_conv_returned = img_conv
 
     
-    if inv:
+    if inv and reps>0:
         img_conv_returned = invert_img(img_conv_returned)
 
     return img_conv_returned
@@ -669,7 +614,44 @@ def inter (img1, img2):
     return interimg
 
 
-def combine(img1, img2):
+def differ (img1, img2, inverted):
+
+    if(inverted):
+    
+        interimg = np.ones( (img1.shape[0], img1.shape[1]), dtype = np.uint8)
+        interimg = interimg*255
+        differvalue = 0
+        background = 255
+
+    else:
+
+        interimg = np.zeros( (img1.shape[0], img1.shape[1]), dtype = np.uint8)
+        differvalue = 255
+        background = 0
+
+
+
+    for i in range(img1.shape[0]):
+        for j in range(img1.shape[1]):
+
+            if img1[i,j]==img2[i,j]:
+                interimg[i,j] = background
+            else:
+                interimg[i,j] = differvalue
+                
+
+            
+            
+    
+    return interimg
+
+
+def combine(img1, img2, inv):
+
+    if(inv==False):
+       img1 = invert_img(img1)
+       img2 = invert_img(img2)
+
 
     img1 = img1/255
     img2 = img2/255
@@ -678,7 +660,31 @@ def combine(img1, img2):
 
     imgcomb = imgcomb*255
 
+    if(inv==False):
+       imgcomb = invert_img(imgcomb)
+
     return imgcomb
+
+
+def esqueleto(img1, img2, inverted):
+
+    img2 = invert_img(img2)
+    if(inverted):
+        value = 255
+    else:
+        value = 0
+
+    interimg = img1
+
+    for i in range(img1.shape[0]):
+        for j in range(img1.shape[1]):
+
+            if img2[i,j]== value:
+                img1[i,j] = value
+
+    
+    return img1 
+
 
 
 

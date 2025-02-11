@@ -102,9 +102,6 @@ while(notempty):
 
     differimg = combine(differimg, newdifferimg, inverted)
     
-    cv2.imshow("Combined Image", differimg)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
     
 

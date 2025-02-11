@@ -1,7 +1,7 @@
 
 import cv2 
 from utils.generalutils import *
-from utils.grayutils import add_black_border, convolucao, combine
+from utils.grayutils import add_black_border, filtro
 from utils.graphutils import calcHists, plotGrayOnly
 
 
@@ -23,7 +23,7 @@ print(imagem.shape[2])
 
 gray, blue, green, red = split_colors(imagem)
         
-border_img = add_black_border(gray,3)
+border_img = add_black_border(gray,33)
 
 print("lenght: ")
 
@@ -35,16 +35,12 @@ print(border_img.shape[0])
 
 
 
-conv_img = convolucao(border_img,3)
-
-
+conv_img = filtro(border_img,33)
 
 base, data, _, _, _ = calcHists(conv_img, blue, green, red, imagem)
 plotGrayOnly(base, data)
 
-new_img = combine(conv_img, gray, False)
 
-
-cv2.imshow("Combined Image", new_img)
+cv2.imshow("Combined Image", conv_img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -244,61 +244,33 @@ def add_black_border(gray, mask_size):
     return img_with_border    
 
 
-def convolucao(img_border, mask_size):
+import numpy as np
 
-    
-    part =  np.zeros( (mask_size, mask_size), dtype = int )
-    bordr = mask_size -1
+def convolucao(img_border, mask_size=3):
+    border_size = mask_size // 2  # Proper padding size
 
-    border_size = int(bordr/2)
-
-
-    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+    img_conv = np.zeros((img_border.shape[0] - 2 * border_size, 
+                         img_border.shape[1] - 2 * border_size), dtype=np.uint8)
 
 
-    conv_matrix = np.array([[0,  1, 0],
-                            [1, -4, 1],
-                            [0,  1, 0]])
+    conv_matrix = np.array([[-1,  0,  1],
+                             [-2,  0,  2],
+                             [-1,  0,  1]])
 
-    pixel = 1
+    for j in range(border_size, img_border.shape[0] - border_size):
+        for k in range(border_size, img_border.shape[1] - border_size):
+   
+            part = img_border[j - border_size:j + border_size + 1, k - border_size:k + border_size + 1]
 
-    cut1 = 0
-    cut2 = 0
-    last_part1 = mask_size
-    last_part2 = mask_size
+            sumol = np.sum(part * conv_matrix)
 
-    for j in range(border_size, (img_border.shape[0]-border_size)):
-        for k in range(border_size, (img_border.shape[1]-border_size)):
+           
+            sumol = np.clip(sumol, 0, 255)
 
-            
-            part = (img_border[cut1:last_part1,cut2:last_part2])*conv_matrix
-
-            sumol = part.sum()
-            
-
-            if(sumol>255):
-                sumol = 255
-            if (sumol<0):
-                sumol = 0
-
-            img_conv[j-border_size,k-border_size] = sumol
-            
-            
-            cut2 +=1
-            last_part2+=1
-            
-        cut2=0
-        last_part2=mask_size
-
-
-        
-        cut1 +=1
-        last_part1+=1
-            
-
+     
+            img_conv[j - border_size, k - border_size] = sumol  
 
     return img_conv
-
 
 import numpy as np
 
@@ -684,6 +656,277 @@ def esqueleto(img1, img2, inverted):
 
     
     return img1 
+
+def filtro(img_border, mask_size):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+
+
+    conv_matrix =  np.ones( (mask_size, mask_size), dtype = np.uint8)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    for j in range(border_size, (img_border.shape[0]-border_size)):
+        for k in range(border_size, (img_border.shape[1]-border_size)):
+
+            
+            part = (img_border[cut1:last_part1,cut2:last_part2])*conv_matrix
+
+            sumol = part.sum()/(part.shape[0]*part.shape[1])
+        
+
+            img_conv[j-border_size,k-border_size] = sumol
+            
+            
+            cut2 +=1
+            last_part2+=1
+            
+        cut2=0
+        last_part2=mask_size
+
+
+        
+        cut1 +=1
+        last_part1+=1
+            
+
+
+    return img_conv
+
+def ruido(img_border, mask_size):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+
+
+    conv_matrix =  np.ones( (mask_size, mask_size), dtype = np.uint8)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    for j in range(border_size, (img_border.shape[0]-border_size)):
+        for k in range(border_size, (img_border.shape[1]-border_size)):
+
+            
+            part = (img_border[cut1:last_part1,cut2:last_part2])*conv_matrix
+
+            sumol = np.median(part)
+        
+
+            img_conv[j-border_size,k-border_size] = sumol
+            
+            
+            cut2 +=1
+            last_part2+=1
+            
+        cut2=0
+        last_part2=mask_size
+
+
+        
+        cut1 +=1
+        last_part1+=1
+            
+
+
+    return img_conv
+
+import statistics as st
+
+def moda(img_border, mask_size):
+
+    
+    part =  np.zeros( (mask_size, mask_size), dtype = int )
+    bordr = mask_size -1
+
+    border_size = int(bordr/2)
+
+
+    img_conv = np.zeros( (img_border.shape[0]-border_size, img_border.shape[1]-border_size), dtype = np.uint8)
+
+
+    conv_matrix =  np.ones( (mask_size, mask_size), dtype = np.uint8)
+
+    pixel = 1
+
+    cut1 = 0
+    cut2 = 0
+    last_part1 = mask_size
+    last_part2 = mask_size
+
+    for j in range(border_size, (img_border.shape[0]-border_size)):
+        for k in range(border_size, (img_border.shape[1]-border_size)):
+
+            
+            part = (img_border[cut1:last_part1,cut2:last_part2])*conv_matrix
+
+            values, counts = np.unique(part, return_counts=True)
+            mode_value = values[np.argmax(counts)]
+        
+
+            img_conv[j-border_size,k-border_size] = mode_value
+            
+            
+            cut2 +=1
+            last_part2+=1
+            
+        cut2=0
+        last_part2=mask_size
+
+
+        
+        cut1 +=1
+        last_part1+=1
+            
+
+
+    return img_conv
+
+
+import numpy as np
+
+def order(img_border, mask_size):
+    border_size = mask_size // 2 
+
+    img_conv = np.zeros((img_border.shape[0] - 2 * border_size, 
+                         img_border.shape[1] - 2 * border_size), dtype=np.uint8)
+
+    conv_matrix = np.ones((mask_size, mask_size), dtype=np.uint8)
+
+    for j in range(border_size, img_border.shape[0] - border_size):
+        for k in range(border_size, img_border.shape[1] - border_size):
+ 
+            part = img_border[j - border_size:j + border_size + 1, k - border_size:k + border_size + 1]
+
+
+            part = np.sort(part, axis=0)
+
+            img_conv[j - border_size, k - border_size] = part[0,0]
+
+    return img_conv
+
+
+
+def filter_test(img_border, operator):
+    
+    if(operator == "sobel"):
+        
+        conv_matrix = np.array([[-1,  -2,  1],
+                             [0,  0,  0],
+                             [1,  2,  1]])
+        
+        mask_size = 3
+        loop = 2 
+        border_size = mask_size // 2
+        adder = 1
+        
+    if(operator == "prewitt"):
+
+        conv_matrix = np.array([[-1,  -1,  -1],
+                             [0,  0,  0],
+                             [1,  1,  1]])
+        
+        mask_size = 3
+        loop = 2 
+        border_size = mask_size // 2
+        adder = 1
+
+
+    if(operator == "roberts"):
+
+        conv_matrix = np.array([[1,  0],
+                             [0,  -1]])
+        
+        mask_size = 2
+        loop = 2 
+        border_size = 1
+        adder = 0
+
+
+    print(conv_matrix)
+
+
+      # Proper padding size
+
+    img_conv = np.zeros((img_border.shape[0] - 2 * border_size, 
+                         img_border.shape[1] - 2 * border_size), dtype=np.uint8)
+    
+    img_conv = img_border
+
+    
+
+
+    for l in range(loop):
+
+        print(l+1)
+
+        for j in range(border_size, img_border.shape[0] - border_size):
+            for k in range(border_size, img_border.shape[1] - border_size):
+    
+                part = img_conv[j - border_size:j + border_size + adder, k - border_size:k + border_size + adder]
+                
+                sumol = np.sum(part * conv_matrix)
+                
+            
+                sumol = np.clip(sumol, 0, 255)
+
+        
+                img_conv[j - border_size, k - border_size] = sumol  
+
+        cv2.imshow("Combined Image", img_conv)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        if(operator == "sobel"):
+            
+            conv_matrix = np.array([[-1,  0,  1],
+                                [-2,  0,  2],
+                                [-1,  0,  1]])
+            
+            mask_size = 3
+            
+        if(operator == "prewitt"):
+
+            conv_matrix = np.array([[-1,  0,  1],
+                                [-2,  0,  1],
+                                [-1,  0,  1]])
+            
+            mask_size = 3
+
+
+        if(operator == "roberts"):
+
+            conv_matrix = np.array([[0,  1],
+                                [-1,  0]])
+            
+            mask_size = 2
+
+    return img_conv
+
+
+
 
 
 
